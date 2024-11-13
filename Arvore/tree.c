@@ -20,6 +20,12 @@ void memcpy(void * dst, const void * src, size_t n){
         p1[i] = p2[i];
 }
 
+void memset(void * dst, const char value, size_t n){
+    char * p = dst;
+    for(size_t i = 0; i < n; i++)
+        p[i] = value;
+}
+
 treenode_t * Tree(size_t typesize, size_t base, bool(*cmp)(void * a, void * b)){
     treenode_t * tree = malloc(sizeof(treenode_t));
     if(!tree)
@@ -35,7 +41,7 @@ treenode_t * Tree(size_t typesize, size_t base, bool(*cmp)(void * a, void * b)){
         return NULL;
     }
 
-    tree->value = NULL;
+    memset(tree->value, 0, tree->typesize);
 
     tree->nodes = malloc(sizeof(treenode_t *) * tree->base);
     if(!tree->nodes){
