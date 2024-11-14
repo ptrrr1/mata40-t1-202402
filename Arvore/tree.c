@@ -104,6 +104,9 @@ bool Tree_PushNode(treenode_t * tree, void * value){
         return false;
     }
 
+    for(int j = tree->base - 1; j > i; j++)
+        tree->nodes[j] = tree->nodes[j - 1];
+
     memcpy(node->value, value, node->typesize);
 
     tree->nodes[i] = node;
