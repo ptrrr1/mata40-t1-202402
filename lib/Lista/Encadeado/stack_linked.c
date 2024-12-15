@@ -1,11 +1,5 @@
+#include "stack_linked.h"
 #include <stdlib.h>
-#include <stdio.h>
-
-typedef struct node Node;
-struct node {
-	int value;
-	Node *addr;
-};
 
 void push(Node *header, int *cur_size, int target) {
 	Node *ptr = (Node*)malloc(sizeof(Node));
@@ -44,14 +38,4 @@ void pop(Node *header, int *cur_size) {
 		
 		*cur_size -= 1;
 	} // Underflow
-}
-
-int main(int argc, char const *argv[]) {
-	int n = 0; // Size of list
-	Node header = {
-		.value = 0,
-		.addr = NULL
-	};
-
-	return 0;
 }

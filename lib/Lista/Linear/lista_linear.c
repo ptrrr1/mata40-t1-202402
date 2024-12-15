@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "lista_linear.h"
 
 // Complexity of O(n)
 // It searches through all n of them in worst case
@@ -95,14 +96,4 @@ void remove_ordered(int arr[], int max, int *cur_size, int target) {
   } else {
     printf("Empty list\n");
   }
-}
-
-/* ------------------------------------------------------------ */
-
-int main(int argc, char const *argv[]) {
-  int n;   // cur size
-  int max; // max size
-  int arr[max];
-
-  return 0;
 }

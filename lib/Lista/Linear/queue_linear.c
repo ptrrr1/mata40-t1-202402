@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "queue_linear.h"
 
 void queue(int arr[], int max, int *cur_size, int *left, int *right, int target) {
 	if (*cur_size < max) {
@@ -31,15 +31,4 @@ void dequeue(int arr[], int max, int *cur_size, int *left, int *right) {
 		*left = 0;
 		*right = 0;
 	}
-}
-
-int main(int argc, char const *argv[]) {
-	int l = 0; // left size
-	int r; // right side
-	int n; // size
-	int max; // max size
-	scanf("%d %d", &max, &n);
-	r = n;
-	
-	return 0;
 }

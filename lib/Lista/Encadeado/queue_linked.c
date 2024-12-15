@@ -1,12 +1,5 @@
+#include "queue_linked.h"
 #include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-
-typedef struct node Node;
-struct node {
-	int value;
-	Node *addr;
-};
 
 // O(n) complexity without tail
 // O(1) complexity with tail
@@ -44,6 +37,7 @@ void dequeue(Node *header, int *cur_size) {
 	} // Underflow
 }
 
+// Unite two ordered queue into a single ordered one
 void unify(Node *h1, int n1, Node *h2, int n2, Node *h3, int *n3) {
 	Node *ptr1 = h1->addr;
 	Node *ptr2 = h2->addr;
@@ -78,7 +72,6 @@ void unify(Node *h1, int n1, Node *h2, int n2, Node *h3, int *n3) {
 		ptr3 = ptr;
 
 		(*n3)++;
-	
 	}
 
 	while (ptr2 != NULL) {
@@ -92,16 +85,5 @@ void unify(Node *h1, int n1, Node *h2, int n2, Node *h3, int *n3) {
 		ptr3 = ptr;
 
 		(*n3)++;
-	
 	}
-}
-
-int main(int argc, char const *argv[]) {
-	int n1 = 0; // Size of list
-	Node header1 = {
-		.value = 0,
-		.addr = NULL
-	};
-
-	return 0;
 }
