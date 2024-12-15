@@ -12,8 +12,14 @@ struct tree_t {
 
 Tree* create_node(int value);
 
-Tree* find(Tree* root, int value, int* exit_code);
+Tree* find(Tree* root, int value, int* exit_code, Tree** father);
 
 Tree* insert_node(Tree* root, int value);
+
+Tree* remove_node(Tree* root, int value);
+
+int compare(Tree* r1, Tree* r2);
+
+int compare2(Tree* r1, Tree* r2);
 
 #endif //__TREE_H__
