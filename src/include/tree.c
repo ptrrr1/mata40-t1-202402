@@ -106,15 +106,13 @@ int compare(Tree* r1, Tree* r2) {
 	int isEqual = 0; // 1 equal, 0 not equal
 
 	if (r1 == NULL && r2 == NULL) { isEqual = 1; }
-	else if (
-	         (r1 == NULL && r2 != NULL) ||
-	         (r1 != NULL && r2 == NULL)
-	        ) { isEqual = 0; }
-	else if (r1->value == r2->value) {
-		int ll = compare(r1->left, r2->left);
-		int rr = compare(r1->right, r2->right);
+	else if (r1 && r2) {
+		if (r1->value == r2->value) {
+			int ll = compare(r1->left, r2->left);
+			int rr = compare(r1->right, r2->right);
 
-		isEqual = ll && rr;
+			isEqual = ll && rr;
+		}
 	}
 
 	return isEqual;
