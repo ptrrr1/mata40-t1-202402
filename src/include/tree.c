@@ -209,8 +209,6 @@ void traverse_postorder(Tree* root) {
 }
 
 void traverse_inorder(Tree* root) {
-	if (root == NULL) return;
-
 	int top = 0;
 	Tree* arr[100];
 	Tree* node = root;
