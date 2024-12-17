@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include "include/tree.h"
 
-void traverse(Tree* root) {
+void traverse(Tree* root, int level) {
 	if (root == NULL) return;
 
-	traverse(root->left);
-	printf("%d ", root->value);
-	traverse(root->right);
+	traverse(root->left, level + 1);
+	printf("%*s", 4*level, "");
+	printf("%d\n", root->value);
+	traverse(root->right, level + 1);
 }
 
 int main() {
@@ -27,12 +28,12 @@ int main() {
 		r2 = insert_node(r2, v);
 	}
 
-	traverse(r2);
+	traverse(root, 0);
 
-	remove_node(r2, 45);
+	root = remove_node(root, 45);
 
-	printf("\n");
-	traverse(r2);
+	printf("\n-------------------\n");
+	traverse(root, 0);
 
 	return 0;
 }

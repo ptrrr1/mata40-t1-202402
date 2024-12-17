@@ -82,19 +82,19 @@ Tree* remove_node(Tree* root, int value) {
 	if (exit_code == 1) {
 		// no nodes
 		if (subtree->left == NULL && subtree->right == NULL) {
-			if (subtree == root) { /* free it */ }
+			if (subtree == root) { root = NULL; }
 			else if (subroot->left == subtree) { subroot->left = NULL; }
 			else { subroot->right = NULL; }
 	    }
 		// only has left node
 		else if (subtree->left != NULL && subtree->right == NULL) {
-			if (subtree == root) { root = root->left; }
+			if (subtree == root) { root = subtree->left; }
 			else if (subroot->left == subtree) { subroot->left = subtree->left; }
 			else { subroot->right = subtree->left; }
 		}
 		// only has right node
 		else if (subtree->left == NULL && subtree->right != NULL) {
-			if (subtree == root) { root = root->right; }
+			if (subtree == root) { root = subtree->right; }
 			else if (subroot->left == subtree) { subroot->left = subtree->right; }
 			else { subroot->right = subtree->right; }
 		}
@@ -109,6 +109,7 @@ Tree* remove_node(Tree* root, int value) {
 				ptr = ptr->left;
 			}
 
+			 // Disconnect ptr from its previous parent if it's not the immediate right child
 			if (root_ptr != subtree) {
 				root_ptr->left = ptr->right;
 				ptr->right = subtree->right;
