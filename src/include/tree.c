@@ -12,6 +12,7 @@ Tree* create_node(int value) {
 	return node;
 }
 
+// Recursivo
 Tree* find(Tree* root, int value, int* exit_code, Tree** father) {
 	Tree* ptr = root;
 
@@ -34,6 +35,7 @@ Tree* find(Tree* root, int value, int* exit_code, Tree** father) {
 	return ptr;
 }
 
+// Não recursivo
 Tree* find2(Tree* root, int value, int* exit_code, Tree** father) {
 	Tree* ptr = root;
 	if (ptr == NULL) { *exit_code = 0; } // Root Doesn't exist
@@ -80,17 +82,20 @@ Tree* remove_node(Tree* root, int value) {
 	if (exit_code == 1) {
 		// no nodes
 		if (subtree->left == NULL && subtree->right == NULL) {
-	        if (subroot->left == subtree) { subroot->left = NULL; }
-	        else { subroot->right = NULL; }
+			if (subtree == root) { /* free it */ }
+			else if (subroot->left == subtree) { subroot->left = NULL; }
+			else { subroot->right = NULL; }
 	    }
 		// only has left node
 		else if (subtree->left != NULL && subtree->right == NULL) {
-			if (subroot->left == subtree) { subroot->left = subtree->left; }
+			if (subtree == root) { root = root->left; }
+			else if (subroot->left == subtree) { subroot->left = subtree->left; }
 			else { subroot->right = subtree->left; }
 		}
 		// only has right node
 		else if (subtree->left == NULL && subtree->right != NULL) {
-			if (subroot->left == subtree) { subroot->left = subtree->right; }
+			if (subtree == root) { root = root->right; }
+			else if (subroot->left == subtree) { subroot->left = subtree->right; }
 			else { subroot->right = subtree->right; }
 		}
 		// has both nodes
@@ -124,6 +129,7 @@ Tree* remove_node(Tree* root, int value) {
 	return root;
 }
 
+// Recursivo
 int compare(Tree* r1, Tree* r2) {
 	int isEqual = 0; // 1 equal, 0 not equal
 
@@ -140,6 +146,7 @@ int compare(Tree* r1, Tree* r2) {
 	return isEqual;
 }
 
+// Não recursivo usando pré ordem
 int compare2(Tree* r1, Tree* r2) {
 	int isEqual = 1; // 1 equal, 0 not equal
 
