@@ -27,8 +27,12 @@ int main() {
 		r2 = insert_node(r2, v);
 	}
 
-	int is_iso = compare2(NULL, NULL);
-	printf("%d", is_iso);
+	traverse(r2);
+
+	remove_node(r2, 45);
+
+	printf("\n");
+	traverse(r2);
 
 	return 0;
 }

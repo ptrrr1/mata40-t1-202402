@@ -34,10 +34,31 @@ Tree* find(Tree* root, int value, int* exit_code, Tree** father) {
 	return ptr;
 }
 
+Tree* find2(Tree* root, int value, int* exit_code, Tree** father) {
+	Tree* ptr = root;
+	if (ptr == NULL) { *exit_code = 0; } // Root Doesn't exist
+	else {
+		while(*exit_code == -1) {
+			if (value == ptr->value) { *exit_code = 1; }
+			else if (value < ptr->value) {
+				if (ptr->left != NULL) { *father = ptr; ptr = ptr->left; }
+				else { *exit_code = 2; } // Not found - Left
+			}
+			else if (value > ptr->value) {
+				if (ptr->right != NULL) { *father = ptr; ptr = ptr->right; }
+				else { *exit_code = 3; } // Not Found - Right
+			}
+		}
+	}
+
+	return ptr;
+}
+
 Tree* insert_node(Tree* root, int value) {
 	int exit_code = -1;
 	Tree* subroot = root;
-	Tree* subtree = find(subroot, value, &exit_code, &subroot);
+	//Tree* subtree = find(subroot, value, &exit_code, &subroot);
+	Tree* subtree = find2(subroot, value, &exit_code, &subroot);
 
 	if (exit_code == 1) {} // Already Exists
 	else {
@@ -53,7 +74,8 @@ Tree* insert_node(Tree* root, int value) {
 Tree* remove_node(Tree* root, int value) {
 	int exit_code = -1;
 	Tree* subroot = root;
-	Tree* subtree = find(subroot, value, &exit_code, &subroot);
+	//Tree* subtree = find(subroot, value, &exit_code, &subroot);
+	Tree* subtree = find2(subroot, value, &exit_code, &subroot);
 
 	if (exit_code == 1) {
 		// no nodes

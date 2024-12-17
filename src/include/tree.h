@@ -14,6 +14,8 @@ Tree* create_node(int value);
 
 Tree* find(Tree* root, int value, int* exit_code, Tree** father);
 
+Tree* find2(Tree* root, int value, int* exit_code, Tree** father);
+
 Tree* insert_node(Tree* root, int value);
 
 Tree* remove_node(Tree* root, int value);
