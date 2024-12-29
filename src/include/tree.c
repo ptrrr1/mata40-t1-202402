@@ -253,3 +253,40 @@ void traverse_inorder(Tree* root) {
 		}
 	}
 }
+
+// Print each level on a new line
+void cousins(Tree* root) {
+	int size = 0;
+	// Should be a linked version
+	Tree* queue[100]; int s = 0; int e = 0;
+	Tree* ptr = root;
+
+	int printed = 0;
+	int cur_level = 1;
+	int next_level = 0;
+
+	while (size > 0 || ptr != NULL) {
+		if (ptr != NULL) {
+			if (ptr->left != NULL) {
+				queue[e] = ptr->left; e++; size++;
+				next_level++;
+			}
+			if (ptr->right != NULL) {
+				queue[e] = ptr->right; e++; size++;
+				next_level++;
+			}
+
+			//printf("%d ", ptr->value); printed++;
+			if (printed == cur_level) {
+				//printf("\n");
+
+				cur_level += next_level;
+				next_level = 0;
+			}
+
+			ptr = queue[s]; s++; size--;
+		} else {
+			ptr = queue[s]; s++; size--; // dequeue
+		}
+	}
+}

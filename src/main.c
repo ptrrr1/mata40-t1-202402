@@ -20,20 +20,9 @@ int main() {
 		root = insert_node(root, v);
 	}
 
-	scanf("%d", &n);
-
-	Tree* r2 = NULL;
-	for (int i = 0; i < n; i++) {
-		scanf("%d", &v);
-		r2 = insert_node(r2, v);
-	}
-
 	traverse(root, 0);
-
-	root = remove_node(root, 45);
 
 	printf("\n-------------------\n");
-	traverse(root, 0);
 
 	return 0;
 }
