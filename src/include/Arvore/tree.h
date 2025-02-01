@@ -1,35 +1,27 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#ifndef __TREE_H__
+#define __TREE_H__
 
+typedef struct tree_t Tree;
 
-typedef struct tree{
+struct tree_t {
+	int value;
+	//int height;
+	Tree* left;
+	Tree* right;
+};
 
-    size_t typesize;
-    void * value;
-    size_t base;
-    struct tree ** nodes;
-    bool (*cmp)(void * a, void * b);
-}treenode_t;
+Tree* create_node(int value);
 
+Tree* find(Tree* root, int value, int* exit_code, Tree** father);
 
-int memcmp(const void * a, const void * b, size_t n);
+Tree* find2(Tree* root, int value, int* exit_code, Tree** father);
 
-void memcpy(void * dst, const void * src, size_t n);
+Tree* insert_node(Tree* root, int value);
 
-treenode_t * Tree(size_t typesize, size_t base, bool(*cmp)(void * a, void * b));
+Tree* remove_node(Tree* root, int value);
 
-inline bool Tree_IsEmpty(treenode_t * tree);
+int compare(Tree* r1, Tree* r2);
 
-inline bool Tree_IsFull(treenode_t * tree);
+int compare2(Tree* r1, Tree* r2);
 
-int Tree_Find(treenode_t * tree, void * value);
-
-treenode_t * Tree_Get(treenode_t * tree, void* value);
-
-bool Tree_PushNode(treenode_t * tree, void * value);
-
-bool Tree_PullNode(treenode_t * tree, void * value);
-
-void Tree_DestroyNode(treenode_t * node);
-
+#endif //__TREE_H__

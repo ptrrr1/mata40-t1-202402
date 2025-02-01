@@ -1,150 +1,292 @@
-#include <tree.h>
+#include "tree.h"
+#include <stdlib.h>
 
+Tree* create_node(int value) {
+	Tree* node = (Tree *)malloc(sizeof(Tree));
 
-//memcmp e memcpy existem, mas não quis incluir a lib <string.h> inteira somente por conta de duas funções, que nem tem a ver com string diretamente...
+	node->value = value;
+	//node->height = 1;
+	node->left = NULL;
+	node->right = NULL;
 
-int memcmp(const void * a, const void * b, size_t n){
-    char * p1 = a, * p2 = b;
-    
-    for(size_t i = 0; i < n; i++)
-        if(p1[i] != p2[i])
-            return p1[i] - p2[i];
-
-    return 0;
-}
-void memcpy(void * dst, const void * src, size_t n){
-    char * p1 = dst;
-    const char * p2 = src;
-    
-    for(size_t i = 0; i < n; i++)
-        p1[i] = p2[i];
+	return node;
 }
 
-void memset(void * dst, const char value, size_t n){
-    char * p = dst;
-    for(size_t i = 0; i < n; i++)
-        p[i] = value;
+// Recursivo
+Tree* find(Tree* root, int value, int* exit_code, Tree** father) {
+	Tree* ptr = root;
+
+	if (ptr == NULL) { *exit_code = 0; } // Root Doesn't exist
+	else if (value == ptr->value) { *exit_code = 1; } // Found
+	else if (value < ptr->value) {
+		if (ptr->left == NULL) { *exit_code = 2; } // Not found - Left
+		else {
+			*father = ptr;
+			ptr = find(ptr->left, value, exit_code, father);
+		}
+	} else if (value > ptr->value) {
+		if (ptr->right == NULL) { *exit_code = 3; } // Not Found - Right
+		else {
+			*father = ptr;
+			ptr = find(ptr->right, value, exit_code, father);
+		}
+	}
+
+	return ptr;
 }
 
-treenode_t * Tree(size_t typesize, size_t base, bool(*cmp)(void * a, void * b)){
-    treenode_t * tree = malloc(sizeof(treenode_t));
-    if(!tree)
-        return NULL;
+// Não recursivo
+Tree* find2(Tree* root, int value, int* exit_code, Tree** father) {
+	Tree* ptr = root;
+	if (ptr == NULL) { *exit_code = 0; } // Root Doesn't exist
+	else {
+		while(*exit_code == -1) {
+			if (value == ptr->value) { *exit_code = 1; }
+			else if (value < ptr->value) {
+				if (ptr->left != NULL) { *father = ptr; ptr = ptr->left; }
+				else { *exit_code = 2; } // Not found - Left
+			}
+			else if (value > ptr->value) {
+				if (ptr->right != NULL) { *father = ptr; ptr = ptr->right; }
+				else { *exit_code = 3; } // Not Found - Right
+			}
+		}
+	}
 
-    tree->typesize = typesize;
-    tree->base = base;
-    tree->cmp = cmp;
-
-    tree->value = malloc(tree->typesize);
-    if(!tree->value){
-        free(tree);
-        return NULL;
-    }
-
-    memset(tree->value, 0, tree->typesize);
-
-    tree->nodes = malloc(sizeof(treenode_t *) * tree->base);
-    if(!tree->nodes){
-        free(tree->value);
-        free(tree);
-        return NULL;
-    }
-
-    for(size_t i = 0; i < tree->base; i++)
-        tree->nodes[i] = NULL;
-
-    return tree;
+	return ptr;
 }
 
-inline bool Tree_IsEmpty(treenode_t * tree){
-    for(int i = 0; i < tree->base; i++)
-        if(tree->nodes[i] != NULL)
-            return false;
+Tree* insert_node(Tree* root, int value) {
+	int exit_code = -1;
+	Tree* subroot = root;
+	//Tree* subtree = find(subroot, value, &exit_code, &subroot);
+	Tree* subtree = find2(subroot, value, &exit_code, &subroot);
 
-    return true;
+	if (exit_code == 1) {} // Already Exists
+	else {
+		Tree* node = create_node(value);
+		if (exit_code == 0) { root = node; }
+		else if (exit_code == 2) { subtree->left = node; }
+		else if (exit_code == 3) { subtree->right = node; }
+	}
+
+	return root;
 }
 
-inline bool Tree_IsFull(treenode_t * tree){
-    for(int i = 0; i < tree->base; i++)
-        if(tree->nodes[i] == NULL)
-            return false;
+Tree* remove_node(Tree* root, int value) {
+	int exit_code = -1;
+	Tree* subroot = root;
+	//Tree* subtree = find(subroot, value, &exit_code, &subroot);
+	Tree* subtree = find2(subroot, value, &exit_code, &subroot);
 
-    return true;
+	if (exit_code == 1) {
+		// no nodes
+		if (subtree->left == NULL && subtree->right == NULL) {
+			if (subtree == root) { root = NULL; }
+			else if (subroot->left == subtree) { subroot->left = NULL; }
+			else { subroot->right = NULL; }
+	    }
+		// only has left node
+		else if (subtree->left != NULL && subtree->right == NULL) {
+			if (subtree == root) { root = subtree->left; }
+			else if (subroot->left == subtree) { subroot->left = subtree->left; }
+			else { subroot->right = subtree->left; }
+		}
+		// only has right node
+		else if (subtree->left == NULL && subtree->right != NULL) {
+			if (subtree == root) { root = subtree->right; }
+			else if (subroot->left == subtree) { subroot->left = subtree->right; }
+			else { subroot->right = subtree->right; }
+		}
+		// has both nodes
+		else {
+			Tree* root_ptr = subtree;
+			Tree* ptr = subtree->right;
+
+			// find leftmost node
+			while (ptr->left != NULL) {
+				root_ptr = ptr;
+				ptr = ptr->left;
+			}
+
+			 // Disconnect ptr from its previous parent if it's not the immediate right child
+			if (root_ptr != subtree) {
+				root_ptr->left = ptr->right;
+				ptr->right = subtree->right;
+			}
+
+			ptr->left = subtree->left;
+
+			if (subtree == root) { root = ptr; }
+			else {
+				if (subroot->left == subtree) { subroot->left = ptr; }
+				else { subroot->right = ptr; }
+			}
+		}
+
+		free(subtree);
+	}
+
+	return root;
 }
 
-int Tree_Find(treenode_t * tree, void * value){
-    for(size_t i = 0; i < tree->base; i++)
-        if(!memcmp(tree->nodes[i]->value, value, tree->typesize))
-            return i;
+// Recursivo
+int compare(Tree* r1, Tree* r2) {
+	int isEqual = 0; // 1 equal, 0 not equal
 
-    return -1;
+	if (r1 == NULL && r2 == NULL) { isEqual = 1; }
+	else if (r1 && r2) {
+		if (r1->value == r2->value) {
+			int ll = compare(r1->left, r2->left);
+			int rr = compare(r1->right, r2->right);
+
+			isEqual = ll && rr;
+		}
+	}
+
+	return isEqual;
 }
 
-treenode_t * Tree_Get(treenode_t * tree, void* value){
-    int index = Tree_Find(tree, value);
-    return index == -1 ? NULL : tree->nodes[index];
+// Não recursivo usando pré ordem
+int compare2(Tree* r1, Tree* r2) {
+	int isEqual = 1; // 1 equal, 0 not equal
+
+	int top1 = 0;
+	Tree* arr1[100];
+	arr1[top1] = r1;
+	top1++;
+
+	int top2 = 0;
+	Tree* arr2[100];
+	arr2[top2] = r2;
+	top2++;
+
+	while (isEqual && top1 > 0 && top2 > 0) {
+		top1--; Tree* n1 = arr1[top1];
+		top2--; Tree* n2 = arr2[top2];
+
+		if (n1 && n2) {
+			if (n1->value != n2->value) { isEqual = 0; }
+			else {
+				if (n1->left != NULL) { arr1[top1] = n1->left; top1++; }
+				if (n1->right != NULL) { arr1[top1] = n1->right; top1++; }
+
+				if (n2->left != NULL) { arr2[top2] = n2->left; top2++; }
+				if (n2->right != NULL) { arr2[top2] = n2->right; top2++; }
+			}
+		} else if (!(!n1 && !n2)) { isEqual = 0; }
+	}
+
+	return isEqual;
 }
 
-bool Tree_PushNode(treenode_t * tree, void * value){
-    if(Tree_IsFull(tree) || !tree->base)
-        return false;
+void traverse_preorder(Tree* root) {
+	if (root == NULL) return;
 
-    size_t i = 0;
-    for(; i < tree->base; i++)
-        if(tree->nodes[i] == NULL || !tree->cmp(tree->nodes[i]->value, value))
-            break;
+	int top = 0;
+	Tree* arr[100];
+	arr[top] = root;
+	top++;
 
-    treenode_t * node = Tree(tree->typesize, tree->base, tree->cmp);
-    if(!node)
-        return false;
+	while (top > 0) {
+		Tree* node = arr[top-1]; top--;
+		//printf("%d ", node->value);
 
-    node->value = malloc(tree->typesize);
-    if(!node->value){
-        Tree_DestroyNode(node);
-        return false;
-    }
-
-    for(int j = tree->base - 1; j > i; j++)
-        tree->nodes[j] = tree->nodes[j - 1];
-
-    memcpy(node->value, value, node->typesize);
-
-    tree->nodes[i] = node;
-
-    return true;
+		if (node->right != NULL) {
+			arr[top] = node->right;
+			top++;
+		}
+		if (node->left != NULL) {
+			arr[top] = node->left;
+			top++;
+		}
+	}
 }
 
-bool Tree_PullNode(treenode_t * tree, void * value){
-    if(Tree_IsEmpty(tree))
-        return false;
+void traverse_postorder(Tree* root) {
+	if (root == NULL) return;
 
-    int index = Tree_Find(tree, value);
-    if(index == -1)
-        return false;
+	int t1 = 0, t2 = 0;
+	Tree* arr1[100];
+	int arr2[100];
 
-    Tree_DestroyNode(tree->nodes[index]);
-    
-    
-    size_t i = index + 1;
-    for(; i < tree->base && tree->nodes[i]; i++)
-        tree->nodes[i - 1] = tree->nodes[i];
+	arr1[t1] = root;
+	t1++;
 
-    if(i != index + 1)
-        tree->nodes[i - 1] = NULL;
-    
-    return true;
+	while(t1 > 0) {
+		t1--;
+		Tree* node = arr1[t1];
+		arr2[t2] = node->value;
+		t2++;
+
+		if (node->left != NULL) {
+			arr1[t1] = node->left;
+			t1++;
+		}
+
+		if (node->right != NULL) {
+			arr1[t1] = node->right;
+			t1++;
+		}
+	}
+
+	while (t2 > 0) {
+		t2--;
+		//printf("%d ", arr2[t2]);
+	}
 }
 
-void Tree_DestroyNode(treenode_t * node){
-    if(!node)
-        return;
+void traverse_inorder(Tree* root) {
+	int top = 0;
+	Tree* arr[100];
+	Tree* node = root;
 
-    for(size_t i = 0; i < node->base; i++)
-        if(node->nodes[i] == NULL)
-            break;
-        else
-            Tree_DestroyNode(node->nodes[i]);
-    free(node->value);
-    free(node->nodes);
-    free(node);
+	while(top > 0 || node != NULL) {
+		if (node != NULL) {
+			arr[top] = node; top++;
+			node = node->left;
+		} else {
+			top--;
+			node = arr[top];
+			//printf("%d ", node->value);
+			node = node->right;
+		}
+	}
+}
+
+// Print each level on a new line
+void cousins(Tree* root) {
+	int size = 0;
+	// Should be a linked version
+	Tree* queue[100]; int s = 0; int e = 0;
+	Tree* ptr = root;
+
+	int printed = 0;
+	int cur_level = 1;
+	int next_level = 0;
+
+	while (size > 0 || ptr != NULL) {
+		if (ptr != NULL) {
+			if (ptr->left != NULL) {
+				queue[e] = ptr->left; e++; size++;
+				next_level++;
+			}
+			if (ptr->right != NULL) {
+				queue[e] = ptr->right; e++; size++;
+				next_level++;
+			}
+
+			//printf("%d ", ptr->value); printed++;
+			if (printed == cur_level) {
+				//printf("\n");
+
+				cur_level += next_level;
+				next_level = 0;
+			}
+
+			ptr = queue[s]; s++; size--;
+		} else {
+			ptr = queue[s]; s++; size--; // dequeue
+		}
+	}
 }
