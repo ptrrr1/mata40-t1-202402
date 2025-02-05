@@ -1,39 +1,27 @@
 #include <stdio.h>
-#include "include/heap.h"
+#include "include/avl.h"
+
+void traverse(avl_tree *root, int h) {
+	if (root == NULL) return;
+
+	traverse(root->left, h+1);
+	printf("%*s%d\n", 2*h, "", root->key);
+	traverse(root->right, h+1);
+}
 
 int main() {
-	int n;
+	int n, v;
 	scanf("%d", &n);
 
-	int heap[n];
-	int arr[n];
-	int cur_size = 0;
+	int h = 0;
+	avl_tree* root = NULL;
 
 	for (int i = 0; i < n; i++) {
-		scanf("%d", &arr[i]);
-		insert_elem(n, heap, &cur_size, arr[i]);
+		scanf("%d", &v);
+		insert_elem(&root, &h, v);
 	}
 
-	for (int i = 0; i < cur_size; ++i) {
-		printf("%d ", heap[i]);
-	}
-	printf("\n");
-
-	for (int i = 0; i < cur_size; ++i) {
-		printf("%d ", arr[i]);
-	}
-	printf("\n");
-
-	for (int i = 0; i < cur_size; ++i) {
-		printf("%d ", heap[i]);
-	}
-	printf("\n");
-
-	heapsort(n, arr, cur_size);
-	for (int i = 0; i < cur_size; ++i) {
-		printf("%d ", arr[i]);
-	}
-	printf("\n");
+	traverse(root, 0);
 
 	return 0;
 }
