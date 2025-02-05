@@ -23,9 +23,7 @@ void up_iterative(int m_size, int arr[m_size], int pos) {
 			arr[pos] = arr[j];
 			arr[j] = aux;
 
-			aux = pos;
 			pos = j;
-			j = (aux - 1) / 2;
 		} else { pos = 0; }
 	}
 }
@@ -47,6 +45,25 @@ void down(int m_size, int arr[m_size], int size, int pos) {
 	}
 }
 
+void down_interative(int m_size, int arr[m_size], int size, int pos) {
+	int j = 2 * pos + 1;
+	while (arr[pos] < arr[j]) {
+		if (j < size) {
+			if (arr[j+1] > arr[j]) {
+				j++;
+			}
+		}
+		if (arr[pos] < arr[j]) {
+			int aux = arr[pos];
+			arr[pos] = arr[j];
+			arr[j] = aux;
+
+			pos = j;
+		}
+		j = 2 * pos + 1;
+	}
+}
+
 void insert_elem(int m_size, int arr[m_size], int *size, int elem) {
 	if (*size < m_size) {
 		arr[*size] = elem;
@@ -60,8 +77,21 @@ void remove_elem(int m_size, int arr[m_size], int *size) {
 		printf("removed max: %d\n", arr[0]);
 		(*size)--;
 		arr[0] = arr[*size];
-		down(m_size, arr, *size, 0);
+		down_interative(m_size, arr, *size, 0);
 	}
+}
+
+void heapsort(int m_size, int arr[m_size], int size) {
+	// Making a Max Heap
+	for (int i = 1; i < m_size; ++i) { up(m_size, arr, i); }
+	// Sorting
+	for (int i = size - 1; i > 0; i--) { // For each bubble down
+		int aux = arr[0];
+		arr[0] = arr[i];
+		arr[i] = aux;
+		down(m_size, arr, i - 1, 0);
+	}
+
 }
 
 void leaf_nodes_start(int size) {
